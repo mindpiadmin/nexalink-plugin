@@ -1,0 +1,23 @@
+{
+  "name": "nexalink",
+  "displayName": "NexaLink",
+  "description": "NexaLink desde Claude Code: reporte diario y tareas desde reuniones (borradores con captura, cierre con la transcripción de TalkToMeets). Conexión autorizada en la web, Playwright para las capturas, skills, comandos y revisor.",
+  "author": {
+    "name": "NexaLink"
+  },
+  "homepage": "https://nexalink.cubixos.com",
+  "userConfig": {
+    "update_notices": {
+      "type": "boolean",
+      "title": "Avisos del plugin",
+      "description": "Al abrir Claude Code, avisar una vez de una versión nueva del plugin y de sus novedades tras actualizarlo.",
+      "default": true
+    },
+    "desktop_notifications": {
+      "type": "boolean",
+      "title": "Aviso de escritorio",
+      "description": "Mostrar un aviso del sistema cuando el agente espera tu respuesta o tu «sí» (con el código de la tarea de la rama). Útil mientras prueba en el navegador.",
+      "default": false
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "nexalink",
+  "owner": {
+    "name": "NexaLink"
+  },
+  "metadata": {
+    "description": "Plugins de NexaLink para Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "nexalink",
+      "description": "NexaLink desde Claude Code: reporte diario y tareas desde reuniones (borradores con captura, cierre con la transcripción de TalkToMeets). Conexión autorizada en la web, Playwright para las capturas, skills, comandos y revisor.",
+      "source": "./plugin"
+    }
+  ]
+}

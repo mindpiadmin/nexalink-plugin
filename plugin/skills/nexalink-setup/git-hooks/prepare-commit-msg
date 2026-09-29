@@ -1,0 +1,19 @@
+#!/bin/sh
+# NexaLink · prepare-commit-msg: si la rama cita una tarea o un ticket (TAR-XXXXX / TK-XXXXX) y el
+# mensaje aún no lo nombra, añade el trailer «Refs: TAR-XXXXX». El reporte diario encuentra los
+# commits de cada tarea por él, también los hechos desde el IDE o a mano.
+# No toca merges ni squashes, ni un mensaje que ya cita el código (fuera de los comentarios).
+# Instalado por la skill nexalink-setup; para quitarlo, borra este archivo o la línea que lo llama.
+msg_file=$1
+case $2 in merge|squash) exit 0 ;; esac
+[ -n "$msg_file" ] && [ -f "$msg_file" ] || exit 0
+
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) || exit 0
+code=$(printf '%s\n' "$branch" | tr '[:lower:]' '[:upper:]' \
+  | grep -oE '(^|[^A-Z0-9])(TAR|TK)-[0-9A-F]{5}([^0-9A-Z]|$)' | head -n 1 \
+  | grep -oE '(TAR|TK)-[0-9A-F]{5}')
+[ -n "$code" ] || exit 0
+
+grep -v '^#' "$msg_file" | grep -qi -- "$code" && exit 0
+git interpret-trailers --in-place --if-exists addIfDifferent --trailer "Refs: $code" "$msg_file" 2>/dev/null
+exit 0

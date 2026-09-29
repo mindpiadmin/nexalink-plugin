@@ -1,0 +1,63 @@
+{
+  "description": "Guarda de producción (PreToolUse + PostToolUse sobre Playwright: sigue la página real y, en un entorno de producción, el agente solo mira), primer uso (SessionStart: la primera vez ofrece /nexalink:ayuda empezar), avisos del plugin (SessionStart: versión nueva y novedades tras actualizar), sesión de una tarea (SessionStart: título «TAR-XXXXX · rama» si la rama cita una tarea) y aviso de escritorio opcional (Notification: cuando el agente espera tu respuesta).",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__plugin_nexalink_playwright__browser_.*|mcp__playwright__browser_.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/prod-guard.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__plugin_nexalink_playwright__browser_.*|mcp__playwright__browser_.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/prod-guard.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/first-run.mjs\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/updates.mjs\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-task.mjs\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog|agent_needs_input|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/notify.mjs\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
