@@ -174,13 +174,16 @@ capture mode.
    urgent), due date (from `calendar`), project, watchers, test system, screenshot (upload as in
    capture step 6). No code anywhere, like a draft (`draft-format.md`).
 3. **Duplicates** — `search_tasks` first; a clear match → «¿Es la misma que «…» (TAR-…)?» and create
-   nothing until they answer.
+   nothing until they answer. That is its own message, BEFORE any preview. A task that is only
+   similar (not the same request) isn't mentioned at all.
 4. **Preview** — `create_task({ …, confirmed: false })`. It creates nothing. Show it in ONE message:
    «Para <nombre> · prioridad <…>[ · vence <día dd/mm>][ · <proyecto>]
    *<título>*
    <descripción en una línea, si hay>
    Subtareas: «…», «…».[ Captura adjunta.]
    Le llegará el aviso por correo. ¿La creo?»
+   That is the ONLY question of the message and the last line: never add a second one («¿es la
+   misma que…?»), or a plain «sí» becomes ambiguous.
 5. **Create** only after a yes: the same call with the SAME fields and `confirmed: true`. Reply in
    one line: «Tarea creada para <nombre>: *<título>* (<TAR-…>) → <url>». Changes asked after the
    preview → a new preview first.
