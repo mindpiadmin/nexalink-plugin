@@ -4,6 +4,27 @@ Al abrir Claude Code después de actualizar el plugin, se enseñan una vez las e
 visto. La más nueva va arriba. Cada entrada empieza por `## ` y su título no se cambia después de
 publicarla: es la marca de «ya visto».
 
+## 2026-10-06 · Una cuenta por rol en los entornos de prueba
+- En **Agentes → Entornos de prueba** cada app tiene ahora varias cuentas, una por rol (admin, empleado, cliente…), con una principal. La cuenta que ya tenías pasa a llamarse «General» y sigue siendo la principal.
+- Al probar, el agente entra con el rol que pide la tarea («como cliente») y te dice con cuál probó cada cosa. Si falta ese rol, te lo indica.
+
+## 2026-10-06 · Crear tareas y resolver borradores desde el agente
+- Para supervisores: `/nexalink:nueva-tarea para María: …` crea la tarea directamente, sin borrador ni aprobación, como «Nueva tarea» en la web. Solo hacen falta el título y el responsable.
+- `/nexalink:borradores` (o «pasa los borradores a tareas») te enseña los borradores pendientes: los apruebas eligiendo el responsable de cada uno, o los descartas con el motivo (le llega a quien lo escribió).
+- En los dos casos te enseña cómo quedará y solo lo hace con tu «sí»: al responsable le llega el aviso en ese momento.
+
+## 2026-10-05 · Métricas del equipo
+- Para supervisores: `/nexalink:metricas` (o «dame las métricas del mes») te da los números del equipo en un periodo, en lenguaje llano: lo terminado y cuánto tardó, lo que se cumplió a tiempo, cuánto espera el trabajo tu revisión, horas por persona y si llegan los reportes diarios.
+- Las mismas reglas que el tablero de la web: tu plan debe incluir las métricas y, si eres supervisor, tu administrador debe darte acceso.
+
+## 2026-10-05 · Qué reportó cada uno
+- Para supervisores: pregúntale a tu agente «¿qué reportó cada uno?» o «¿en qué trabajó Ana ayer?» y te lo resume persona por persona, a grandes rasgos y solo texto: en qué trabajó, cuánto tiempo y qué terminó. Quién no lo ha enviado o estuvo ausente, también.
+
+## 2026-10-05 · La captura pegada y el responsable llegan al borrador
+- Si pegas una captura en el chat al pedir una tarea (`/nexalink:tarea`) o una corrección (`/nexalink:correccion`), ahora se adjunta. Antes se quedaba en el chat y llegaba sin foto.
+- Si por algo no se puede adjuntar, el agente te lo dice en vez de crear el borrador sin ella en silencio.
+- Si dices a quién va («asígnasela a María»), el borrador queda ya asignado a esa persona, no escrito en la descripción. Sigue siendo borrador: quien aprueba la ve puesta.
+
 ## 2026-09-29 · Borradores más simples
 - Al anotar una tarea en una reunión (`/nexalink:tarea`), el borrador lleva solo lo importante: **título, qué se pidió, el proyecto y la captura**.
 - Prioridad, responsable, fecha y subtareas ya no se proponen: los decide quien aprueba el borrador.

@@ -42,7 +42,10 @@ reporte diario es de los empleados. Termina con **un** comando que me toque ahor
 - `/nexalink:cierre-reunion` — al terminar, completa las tareas con lo que se dijo en la grabación. Aplica solo lo que confirmes.
 
 **Supervisores**
+- `/nexalink:nueva-tarea` — crea una tarea ya asignada a alguien, sin borrador ni aprobación: al responsable le llega el aviso. Vista previa antes.
+- `/nexalink:borradores` — pasa los borradores pendientes a tareas (eligiendo el responsable de cada uno) o los descarta. Vista previa antes.
 - `/nexalink:equipo` — cómo va tu equipo hoy: quién reportó, preguntas sin responder, lo vencido, lo que se pasa del tiempo estimado y lo que espera revisión. Solo mira.
+- `/nexalink:metricas` — los números del equipo en un periodo («este mes»): lo terminado y cuánto tardó, lo que se cumplió a tiempo, lo que espera revisión, horas por persona y reportes diarios. Solo mira.
 - `/nexalink:por-revisar` — lo que espera tu revisión: lo prueba, te dice en lenguaje llano qué cumple y qué no, y lo apruebas o devuelves con tu «sí».
 - `/nexalink:novedades` — resumen de lo terminado en un periodo para contárselo a un cliente, con capturas. No envía nada.
 

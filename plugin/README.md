@@ -30,7 +30,7 @@ agente trabaja con NexaLink sin que copies nada:
 | Subagente `nexalink-report-reviewer` | Revisa el reporte antes de enviarlo: prueba los pasos en el navegador y comprueba commits y PR. |
 | Subagente `nexalink-meeting-closer` | Lee la grabación completa de una reunión en su propio contexto y devuelve solo la propuesta de cierre (no escribe nada). |
 | Subagente `nexalink-pr-reviewer` | Contrasta lo que hay en tu rama (commiteado o no) con la tarea (criterios, subtareas, capturas) y lo prueba en el navegador. Devuelve un informe; no modifica nada. |
-| Comandos `/nexalink:tarea`, `/nexalink:correccion`, `/nexalink:reunion`, `/nexalink:cierre-reunion`, `/nexalink:hoy`, `/nexalink:siguiente`, `/nexalink:trabajar`, `/nexalink:commit`, `/nexalink:duda`, `/nexalink:ticket`, `/nexalink:revisar`, `/nexalink:pr`, `/nexalink:reporte`, `/nexalink:probar`, `/nexalink:por-revisar`, `/nexalink:equipo`, `/nexalink:novedades` y `/nexalink:ayuda` | Atajos (abajo). **`/nexalink:ayuda`** te dice para qué sirve cada uno (o `/nexalink:ayuda <comando>` para uno concreto). Solo se ejecutan cuando tú los escribes (salvo `/nexalink:ayuda`); pedirlo con tus palabras también funciona. |
+| Comandos `/nexalink:tarea`, `/nexalink:nueva-tarea`, `/nexalink:borradores`, `/nexalink:correccion`, `/nexalink:reunion`, `/nexalink:cierre-reunion`, `/nexalink:hoy`, `/nexalink:siguiente`, `/nexalink:trabajar`, `/nexalink:commit`, `/nexalink:duda`, `/nexalink:ticket`, `/nexalink:revisar`, `/nexalink:pr`, `/nexalink:reporte`, `/nexalink:probar`, `/nexalink:por-revisar`, `/nexalink:equipo`, `/nexalink:metricas`, `/nexalink:novedades` y `/nexalink:ayuda` | Atajos (abajo). **`/nexalink:ayuda`** te dice para qué sirve cada uno (o `/nexalink:ayuda <comando>` para uno concreto). Solo se ejecutan cuando tú los escribes (salvo `/nexalink:ayuda`); pedirlo con tus palabras también funciona. |
 
 ## Instalar (Claude Code)
 
@@ -105,7 +105,18 @@ nunca archivos ni detalles técnicos.
    tope diario por empresa).
 
 3. **En la web**, un ADMIN o SUPERVISOR revisa **Tareas → Borradores**, ajusta, elige responsable y
-   **aprueba** (se convierte en tarea normal) o **descarta**.
+   **aprueba** (se convierte en tarea normal) o **descarta**. También puede hacerlo desde su
+   agente con `/nexalink:borradores`: aprueba (eligiendo el responsable) o descarta (con el
+   motivo), ve cómo quedará y lo hace con su «sí».
+
+**Tarea ya asignada, sin borrador (supervisores).** Un ADMIN o SUPERVISOR puede crear la tarea
+directamente, como «Nueva tarea» en la web:
+```
+/nexalink:nueva-tarea para María: que el filtro de tickets recuerde la empresa elegida
+```
+Solo hacen falta el **título** y el **responsable**; prioridad, fecha, subtareas o proyecto, si los
+dices. El agente te enseña cómo quedará y la crea con tu «sí»: al responsable le llega el aviso en
+ese momento. Un empleado que lo use obtiene un borrador, como con `/nexalink:tarea`.
 
 **Correcciones de una tarea que ya existe.** Si en la reunión revisan una tarea y piden cambios
 («al login le falta la versión celular»), no es un borrador:
@@ -199,6 +210,9 @@ Además, para supervisores:
 - **`/nexalink:equipo`** — cómo va tu equipo hoy: quién reportó y quién no, preguntas sin
   responder en sus tareas, lo vencido, lo que lleva más horas reportadas que las estimadas y lo que
   espera tu revisión. Solo mira.
+- **`/nexalink:metricas`** («este mes», «la semana pasada») — los números del equipo: lo terminado
+  y cuánto tardó, lo que se cumplió a tiempo, lo que espera revisión, horas por persona y reportes
+  diarios. Solo mira.
 - **`/nexalink:novedades`** («esta semana para Acme») — resumen de lo terminado, escrito
   para el cliente y con capturas, en un archivo que tú envías. No envía nada.
 

@@ -17,7 +17,8 @@ only inspect and report.
 - In the browser, only navigate and look: never actions that save, send, pay or delete real data
   unless the app is a local/test instance the person pointed you to.
 - Never ask for anyone's password. The only password you may type is the test account of a
-  company test environment (`get_test_access`), only into that site's login form and never
+  company test environment (`get_test_access`, with `account: "<role>"` when the task says which role
+  does it), only into that site's login form and never
   anywhere else; otherwise, if a login appears, ask the main agent to have the person log in in
   that browser window.
 

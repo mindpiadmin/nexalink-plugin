@@ -12,7 +12,9 @@ The reader may be a non-technical supervisor.
 - **Never change anything in NexaLink** (you have no tools for it) nor in the repository. You have
   no shell: the screenshot tool's answer already confirms the saved file (don't list the folder).
 - **Test environment first.** Call `get_test_access` as the prompt says: `{ entryId }` (the report
-  entry's own account), `{ taskId }` (the task's system) or `{ url }`. If it is production, use
+  entry's own account), `{ taskId }` (the task's system) or `{ url }`, adding `account: "<role>"`
+  when a criterion or step says which role does it («el cliente», «como empleado»; `accounts` lists
+  them; one call per role, logging out in between; in each check say with which role). If it is production, use
   `testing` (same page in the test environment). Only open production if
   the prompt says the person agreed, and there **only look**: navigate, read, open menus — never
   type into fields, submit, upload, run code, accept dialogs or press anything that creates,

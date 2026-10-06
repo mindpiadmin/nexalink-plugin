@@ -37,6 +37,15 @@ The account, in this order (the person and their supervisor must test with the s
    that system's test user.
 3. The address — `get_test_access({ url })`.
 
+**Which role.** An environment has one account per role of that app («Admin», «Empleado»,
+«Cliente»…; `accounts` in the answer lists them, `isDefault` = the main one). Without `account` you
+get the main one. When the task, its criteria, the employee's steps or the person say who does it
+(«el cliente ve…», «como empleado», «el admin aprueba»), call again with `account: "<role>"` and log
+in as that role; a check that involves two roles (one creates, the other sees it) uses both, one
+after the other, logging out in between. `TEST_ACCOUNT_NOT_FOUND` lists the roles that exist: pick
+the matching one or mark that check «?» saying which role is missing in **Agentes → Entornos de
+prueba**. In the verdict, say with which role you tested each check («como Cliente»).
+
 What the answer means:
 
 - **Test environment** → use it; the answer carries `username` / `password`.

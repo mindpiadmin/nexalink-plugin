@@ -11,7 +11,9 @@ $ARGUMENTS
 - Busca la tarea (con el código `TAR-` si lo di; si no, entre mis tareas en revisión, en progreso
   o hechas). Si hay dudas entre varias, pregunta cuál en una línea.
 - Escribe el cambio como subtareas de alto nivel, sin código. Si pegué o arrastré una captura,
-  súbela y adjúntala a su subtarea. Quita subtareas solo si lo pedí y solo pendientes.
+  súbela y adjúntala a su subtarea (paso 6 de la skill: una imagen pegada no es un archivo, guárdala
+  antes con `pasted-image.mjs`); si no puedes, dilo en la vista previa. Quita subtareas solo si lo
+  pedí y solo pendientes.
 - Primero `correct_task` con `confirmed: false`: enséñame la vista previa en un solo mensaje
   (qué añades, qué saltas por repetida, qué quitas y si vuelve a En progreso o pierde la
   aprobación) y espera mi «sí». Luego aplica con `confirmed: true` y dame el enlace.

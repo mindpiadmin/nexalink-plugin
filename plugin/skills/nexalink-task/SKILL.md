@@ -1,6 +1,6 @@
 ---
 name: nexalink-task
-description: NexaLink tasks from meetings: a task DRAFT from what is asked (with its screenshot), a CORRECTION of an existing task, and the closing of a meeting from its recording. Use when the user says "crea una tarea con esto", "apunta esto como tarea", "a TAR-… le falta…", "corrige la tarea", "cierra la reunión", "ciérrala con la grabación", "terminó la reunión", "procesa la transcripción de la reunión", "cambia de reunión", or pastes a screenshot asking for a task.
+description: NexaLink tasks from meetings: a task DRAFT from what is asked (with its screenshot), a CORRECTION of an existing task, a task already ASSIGNED without draft and APPROVING or DISCARDING drafts (managers, /nexalink:nueva-tarea, /nexalink:borradores), and the closing of a meeting from its recording. Use when the user says "crea una tarea con esto", "apunta esto como tarea", "a TAR-… le falta…", "corrige la tarea", "cierra la reunión", "ciérrala con la grabación", "terminó la reunión", "procesa la transcripción de la reunión", "cambia de reunión", "pasa los borradores a tareas", "aprueba los borradores", "descarta el borrador", or pastes a screenshot asking for a task.
 ---
 
 # NexaLink tasks from meetings
@@ -65,7 +65,11 @@ The task tools (`create_task_draft`, `search_tasks`, …) must be available from
    ambiguous (what should happen, not how), ask ONE short question; otherwise don't ask.
 3. **Context** — the `get_work_context` of step 1 (once per session): projects (`projectId`) and
    today. Pick the project the request belongs to; if it isn't obvious, leave it. Don't propose a
-   responsible person, priority, due date or subtasks: the approver decides them.
+   priority, due date or subtasks: the approver decides them. **Assignee**: only when the person
+   said who («asígnasela a María», «es para Pedro») → `assignedId` = that user's `id` from
+   `get_work_context` → `users` (it stays a draft; the approver finds it already assigned). Match
+   the name they said against `users`; if several match or none, ask ONE line «¿Cuál María: …?».
+   Never write the assignee in the description instead, and never pick one they didn't say.
 4. **Duplicates** — `search_tasks` with 2–4 key words (it also returns the `tickets` the person can
    see). If a task or ticket is clearly the same request, ask "¿Es la misma que «…»?" before
    creating anything. If it's the same, don't create: offer to add a comment to it at closing time.
@@ -78,14 +82,22 @@ The task tools (`create_task_draft`, `search_tasks`, …) must be available from
    to write a clear, high-level title and description of what the user will see. Never write file
    names, functions, tables or technical steps in the draft. Keep it to a couple of minutes: it's a
    proposal, the approver refines it.
-6. **Screenshot** — if the person gave a file path, or dragged the image into the terminal, upload
-   it: `get_upload_link`, then
-   `curl -sS -X POST -F "file=@<path>" "<uploadUrl>"` → use `{ fileUrl, fileName }` in
-   `attachments`. If the image was only pasted into the chat (no file), try once to save the
-   clipboard to `/tmp/nexalink/task/<name>.png` (macOS `pngpaste`, Linux `wl-paste --type image/png`
-   or `xclip -selection clipboard -t image/png -o`, Windows PowerShell
-   `(Get-Clipboard -Format Image).Save(...)`). If that fails, create the draft without it and say
-   "no pude adjuntar la captura: arrástrala aquí o añádela en la web". Don't block on it.
+6. **Screenshot** — **mandatory whenever the request came with an image** (`[Image #N]` in their
+   message, a dragged file or a path): a draft without the screenshot they gave is a failed capture.
+   Get a file, upload it, then create:
+   - **Pasted into the chat** (`[Image #N]`): a pasted image is NOT a file on disk; you only see it.
+     Save it with the skill's script, alone: `node "${CLAUDE_SKILL_DIR}/pasted-image.mjs" --image N`
+     (one `--image` per screenshot of this request; without `--image` it takes every image of their
+     latest message with images). It prints `{ ok, files: [{ path }], message }`; check that
+     `message.text` is THIS request, not an older one. If it fails (`ok: false`, e.g. another
+     agent), try once to save the clipboard to `/tmp/nexalink/task/<name>.png` (macOS `pngpaste`,
+     Linux `wl-paste --type image/png` or `xclip -selection clipboard -t image/png -o`, Windows
+     PowerShell `(Get-Clipboard -Format Image).Save(...)`).
+   - **Dragged or a path**: use that file.
+   - **Upload**: `get_upload_link`, then `curl -sS -X POST -F "file=@<path>" "<uploadUrl>"` (one
+     call per file) → put each `{ fileUrl, fileName }` in `attachments`.
+   - If nothing works, create the draft without it and say in step 8 "no pude adjuntar la captura:
+     arrástrala aquí o añádela en la web". Don't block on it, but never drop it silently.
 
    **No screenshot, but you know which screen it is** → offer ONCE, in one line: "¿Quieres que
    haga yo la captura de esa pantalla?" If they say yes, use the Playwright MCP (`browser_*` tools:
@@ -106,7 +118,8 @@ The task tools (`create_task_draft`, `search_tasks`, …) must be available from
      more than a couple of minutes, create it and add the screenshot later with `update_task_draft`.
 7. **Create** — `create_task_draft` following `draft-format.md`. Don't ask for confirmation.
 8. **Tell** in ONE line, always this shape: «Borrador creado en «<reunión>»: *<título que devolvió
-   NexaLink>* → <url>» (with a screenshot: «· captura adjunta» before the arrow). Naming
+   NexaLink>* → <url>» (with a screenshot: «· captura adjunta», with an assignee: «· para <nombre>»,
+   both before the arrow). Naming
    the meeting every time lets the person catch a wrong one at once. **Nothing else**: don't explain
    why the meeting is new or who the draft is assigned to, don't compare with what you sent, don't
    list what "changed". Add a second line only if something failed (e.g. the screenshot) or to offer
@@ -130,7 +143,7 @@ correct it; nobody else touches a task that isn't theirs (they can't even see it
    in one line.
 2. **Write the change** as subtasks, like a draft (`draft-format.md`): user-visible outcomes, no
    code. Remove only what the person explicitly asked to drop, and only PENDING subtasks (ids from
-   `get_task`); completed subtasks are never removed. Screenshot → upload it as in capture step 6 and
+   `get_task`); completed subtasks are never removed. Screenshot (a pasted one too) → save and upload it as in capture step 6 and
    put it in that subtask's `attachments`. `note` = one line with what was asked and by whom.
 3. **Preview** — `correct_task({ task, add, removeItemIds, note, meetingId, confirmed: false })`. It
    changes nothing. Show it in ONE message:
@@ -143,6 +156,65 @@ correct it; nobody else touches a task that isn't theirs (they can't even see it
 
 In a meeting, use the session meeting (`meetingId`) so the correction is linked to it. At closing,
 quotes about a corrected task go to that task as usual.
+
+## Assigned task, no draft (managers, `/nexalink:nueva-tarea`)
+
+An ADMIN/SUPERVISOR can create a WORK task already assigned, like «Nueva tarea» in the web: it
+skips the draft and the approval, and the assignee is notified (email + their task list) at once.
+Use this mode ONLY with `/nexalink:nueva-tarea` or when a manager explicitly asks for it («créala ya
+asignada», «sin borrador», «que le llegue ya a Ana»). Everything else stays capture mode (drafts),
+even for managers. An EMPLEADO has no `create_task` tool: tell them it goes as a draft and use
+capture mode.
+
+1. **Required: title and assignee** — nothing else. The assignee is the person the manager named:
+   match it against `get_work_context` → `users`; several or none match → ask ONE line «¿Cuál
+   María: …?». If they didn't say who, ask «¿Para quién es?». Never pick one yourself.
+2. **Optional, only if the manager said it**: description (what is asked, plain language),
+   subtasks (the ones they listed, never padded), priority (default MEDIA; ALTA only if they said
+   urgent), due date (from `calendar`), project, watchers, test system, screenshot (upload as in
+   capture step 6). No code anywhere, like a draft (`draft-format.md`).
+3. **Duplicates** — `search_tasks` first; a clear match → «¿Es la misma que «…» (TAR-…)?» and create
+   nothing until they answer.
+4. **Preview** — `create_task({ …, confirmed: false })`. It creates nothing. Show it in ONE message:
+   «Para <nombre> · prioridad <…>[ · vence <día dd/mm>][ · <proyecto>]
+   *<título>*
+   <descripción en una línea, si hay>
+   Subtareas: «…», «…».[ Captura adjunta.]
+   Le llegará el aviso por correo. ¿La creo?»
+5. **Create** only after a yes: the same call with the SAME fields and `confirmed: true`. Reply in
+   one line: «Tarea creada para <nombre>: *<título>* (<TAR-…>) → <url>». Changes asked after the
+   preview → a new preview first.
+
+## Approve or discard drafts (managers, `/nexalink:borradores`)
+
+An ADMIN/SUPERVISOR can resolve pending drafts like in **Tareas → Borradores**: **approve** one
+(it becomes a work task and its assignee is notified at once) or **discard** it (it leaves the inbox
+and its author is notified with the reason; it can be restored in the web). Only when they ask
+(«pasa los borradores a tareas», «aprueba TAR-…», «descarta el 2») or with `/nexalink:borradores`;
+never as a side effect of capture or closing. An EMPLEADO has neither tool: say a supervisor
+decides.
+
+1. **Which drafts** — a code → that one (`get_task`). Otherwise `list_pending_drafts` (each draft
+   carries its `meeting`: filter by it when they named one; no need for `list_meetings`) and show
+   them numbered, one line each: «1. TAR-… *<título>* · de <autor> · para <responsable>» — or
+   «· sin responsable» when `assignedIsAuthor` — «· <reunión>». Ask in ONE short line which ones to
+   approve (and for whom) and which to discard («apruebo el 1 para Ana, descarta el 2»). Don't
+   announce their role or list every question up front.
+2. **Assignee for each** — required. When `assignedIsAuthor` is true nobody chose one (it defaults
+   to the author): ask «¿Para quién es <título>?» unless the manager already said it. Match names
+   against `get_work_context` → `users`; ambiguous → ask. Due date only if they gave one (`calendar`).
+3. **Preview** — `approve_task_draft({ draft, assignedId?, dueDate?, confirmed: false })` for each;
+   it approves nothing. ONE message listing all: «TAR-… *<título>* → para <nombre>[ · vence <día
+   dd/mm>]». End with «A cada responsable le llega el aviso. ¿Las apruebo?»
+4. **Approve** only after a yes: the same calls with the SAME fields and `confirmed: true`, one per
+   draft. Reply one line each: «Aprobada TAR-… para <nombre> → <url>». `TASK_NOT_DRAFT` → someone
+   already approved or discarded it: say so and go on with the rest.
+
+**Discard** — for each draft to drop, a short reason the author will read («ya existe en TAR-…»,
+«no se hará»); ask once if they gave none (it can stay empty). `discard_task_draft({ draft, reason,
+confirmed: false })` first, shown in the same preview message as the approvals («Descarto TAR-…
+*<título>* (de <autor>): «<motivo>»»), then `confirmed: true` after the yes. Reply «Descartado
+TAR-… · avisado <autor>». Only drafts: an approved work task is never discarded or deleted here.
 
 ## Closing mode ("cierra la reunión")
 
@@ -179,7 +251,8 @@ they see there — whatever their role in NexaLink:
 
 ## Rules
 
-- **Never approve or discard** tasks: that's done by an ADMIN/SUPERVISOR in the web. If the
+- **Approve or discard** drafts only when a manager asked to, through «Approve or discard drafts»
+  (preview, then their yes) — never on your own, and never while capturing or closing. If the
   transcript shows a request was dropped, propose a comment saying so; don't touch its status.
 - **Never edit a task that is no longer a draft** (`TASK_NOT_DRAFT`) except through a confirmed
   correction (`correct_task`: add subtasks, remove pending ones). Title, description, assignee,

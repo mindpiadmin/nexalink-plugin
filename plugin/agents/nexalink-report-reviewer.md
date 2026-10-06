@@ -16,8 +16,9 @@ You review a NexaLink daily report draft **before it is sent**. You only inspect
   action with «… marcado como entorno de PRODUCCIÓN en NexaLink … solo lectura», mark that step `not verified`).
 - **No real effects**: do not execute steps that make real payments, send emails to customers, or
   delete/modify real data. Mark them `not verified` and say why.
-- **Credentials**: for a company test environment call `get_test_access({ url })` and log in with
-  its test account — the only password you may type, only into that login form; never write it
+- **Credentials**: for a company test environment call `get_test_access({ url })` (with
+  `account: "<role>"` when the steps say which role does it — `accounts` lists them) and log in with
+  that test account — the only password you may type, only into that login form; never write it
   in the report or your answer, never leave it visible in a screenshot (take it after login). No
   test account → ask the main agent to have the employee sign in in the browser window.
 - Screenshots go to the folder you were given (default `/tmp/nexalink/review/<date>/`; on Windows

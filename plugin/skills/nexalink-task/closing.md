@@ -144,7 +144,7 @@ Otherwise, apply only the numbered items the person confirmed, in this order:
 - **Duplicates** → `update_task_draft` on the draft you keep with the FULL `items` list (its own plus
   the other's, without repeats) and the FULL `attachments` list (both drafts' screenshots); then
   `add_task_comment` on the other: «Duplicado de «<título>» (<código>): se unió allí. Se puede
-  descartar.» You never discard or delete: the approver does it in the web.
+  descartar.» You never discard or delete while closing: the approver decides it (web or `/nexalink:borradores`).
 - **Detected `existing`** → `add_task_comment({ taskId: <matched draft>, content: "«<cita>» — <detalle>",
   meetingId, atSec, speaker, externalTaskIds: [<id>] })` so TalkToMeets marks it as linked.
 - **Detected `new`** → `create_task_draft` with the same meeting, following `draft-format.md`, and

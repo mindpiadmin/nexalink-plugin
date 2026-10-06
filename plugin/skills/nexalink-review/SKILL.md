@@ -1,6 +1,6 @@
 ---
 name: nexalink-review
-description: For a NexaLink ADMIN or SUPERVISOR (not technical): how the team is doing today, the work waiting for their review (approve or return it), and a client-facing update of what was finished. Use when the user says "/nexalink:equipo", "/nexalink:por-revisar", "/nexalink:novedades", "¿cómo va el equipo?", "¿qué tengo por revisar?", "revisa TAR-…", "apruébala", "devuélvela", "¿qué terminamos esta semana?", "prepara las novedades para el cliente".
+description: For a NexaLink ADMIN or SUPERVISOR (not technical): how the team is doing today, the work waiting for their review (approve or return it), and a client-facing update of what was finished. Use when the user says "/nexalink:equipo", "/nexalink:por-revisar", "/nexalink:novedades", "/nexalink:metricas", "¿cómo va el equipo?", "dame las métricas del mes", "¿qué reportó cada uno?", "¿en qué trabajó Ana ayer?", "¿qué tengo por revisar?", "revisa TAR-…", "apruébala", "devuélvela", "¿qué terminamos esta semana?", "prepara las novedades para el cliente".
 ---
 
 # Supervising the team: overview, review and client updates
@@ -9,10 +9,15 @@ The person reviewing is **not technical**: they never look at code, GitHub, PRs,
 branches. They want to know, in plain language, whether what was asked works — and decide.
 Talk to them in their language (usually Spanish). Everything you show them follows that rule.
 
-Tools: `get_team_overview`, `list_review_queue`, `get_review_context`, `get_test_access`,
+Tools: `get_team_overview`, `get_team_reports`, `get_team_metrics`, `list_review_queue`, `get_review_context`, `get_test_access`,
 `approve_work`, `return_work`, `get_completed_work`, `get_upload_link` (`mcp__nexalink__*` or
 `mcp__plugin_nexalink_nexalink__*`).
 Other roles get `MANAGER_REQUIRED`: tell them this is for supervisors and offer `/nexalink:probar`.
+
+**A draft is not work in review.** If the task is a `BORRADOR` (a proposal from a meeting),
+«apruébala» means turning it into a task and «descártala» dropping it: follow the nexalink-task
+skill, «Approve or discard drafts» (`approve_task_draft` / `discard_task_draft`, asking for whom if
+nobody was named). Don't answer «no está en revisión».
 
 **Dates come from NexaLink, never from your own clock.** `today`, `sinceDay`, `waitingDays`,
 `since`/`until` are counted in the company's timezone: use them as given («desde ayer», «hace 5
@@ -44,6 +49,59 @@ Sin revisar en los reportes: 7 entradas.
 - End proposing **one** next step: `/nexalink:por-revisar` if things wait for review, or the team
   reports page (`teamReportsUrl`) if entries are unreviewed.
 - No `reportsEnabled` → skip the report lines.
+
+## What each one reported («¿qué reportó cada uno?», «¿en qué trabajó Ana ayer?»)
+
+`get_team_reports` (`date` from `get_work_context` → `calendar` for «ayer», «el lunes»…, never
+computed; `userId` from `get_work_context` → `users` for one person) → read-only, broad strokes,
+text only — no screenshots, test steps or links:
+
+```
+Lunes 28 · lo que reportaron:
+Ana (6 h): TAR-01A0D «Filtro por empresa» — terminó «Filtro en celular», avanzó «Exportar».
+  Reunión con el cliente (Otro trabajo, 1 h).
+Carlos (7 h 30): TK-00B12 «Error al pagar» — lo encontró y lo dejó listo para revisar.
+Luis: ausente («médico»). Pedro: no lo ha enviado. Juan: lo tiene a medias.
+```
+
+- One line per person (a second only if they reported several things), most work first; summarize
+  their `text` in a few words, never paste it whole. Minutes → «6 h», «1 h 30».
+- `worked: false` → «no avanzó en X: <motivo>» only if it matters; `finished` → «la dio por
+  terminada (pasa a tu revisión)».
+- `draft` / `missing` / `absence` / `non_working` as in the overview; a draft has no content: never
+  guess what it says.
+- Just the facts, no judgement about the person. For the detail (screenshots, steps) point to the
+  web (`teamReportsUrl`) in one line, or offer `/nexalink:por-revisar` if something waits for review.
+
+## Team metrics (`/nexalink:metricas`, «dame las métricas del mes»)
+
+`get_team_metrics` with `period` (default this_month; «la semana pasada» → `last_week`; explicit
+dates only as `since`/`until`) → one short block in plain language, read-only, the numbers exactly as
+the server gives them (never recompute, never add a percentage it didn't give):
+
+```
+Este mes (del 1 al 29 de septiembre):
+Terminado: 18 tareas y 42 tickets. Los tickets se cerraron en 1,5 días de media.
+A tiempo: 15 de 18 tareas con fecha.
+En revisión: el trabajo esperó 1,2 días de media; ahora esperan 3 (la más antigua desde el lunes 22).
+Abierto ahora: 24 tareas (4 vencidas) y 9 tickets.
+Horas reportadas: Ana 96 h, Carlos 88 h, Luis 70 h…
+Reportes diarios: 92 % enviados; 3 sin enviar, casi todos de Luis.
+¿Empezamos por lo que espera revisión? → /nexalink:por-revisar
+```
+
+- Hours → days when ≥ 48 h («1,5 días»), else «6 h»; minutes → «96 h», «1 h 30». A `null`
+  (nothing to average) → skip that part, never «0».
+- `tasks.withDueDate` = 0 → skip «A tiempo». `oldestSinceDay` → weekday from `get_work_context` →
+  `calendar`, or the date alone.
+- `people`: the top 3-5 by hours, then «y N más». Just the facts, no ranking language («el mejor»,
+  «el que menos») and no judgement about anyone.
+- `reports`: only when `reportsEnabled`; name people only for missing/late reports.
+- `FEATURE_NOT_AVAILABLE` → «tu plan no incluye las métricas»; `PERMISSION_DENIED` → «pídele a tu
+  administrador acceso a las métricas». The full charts are in the web (`dashboardUrl`): mention it
+  in one line only if they ask for more detail.
+- End proposing **one** next step (`/nexalink:por-revisar` if things wait, `/nexalink:equipo` for
+  today).
 
 ## 1. The queue
 
